@@ -1,0 +1,27 @@
+
+.form-container {
+  width: fit-content;
+  height: fit-content;
+  background-color: #3F51B5;
+  border-radius: 20pt;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10pt;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-input {
+}
+button {
+  width: 100%;
+  color: white;
+  border-color: white;
+  outline: white;
+}

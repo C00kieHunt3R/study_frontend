@@ -1,0 +1,15 @@
+p {
+  font-weight: bold;
+}
+.date-input {
+  height: 40pt;
+  width: 158pt;
+  border: 1px solid black;
+  border-width: 0 0 1px 0;
+  background-color: #f5f5f5;
+  border-radius: 5% 5% 0 0;
+  font-size: 12pt;
+}
+.date-input:focus {
+  outline: none;
+}

@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Группа</h1>
+<div mat-dialog-content>
+  <span style="margin-right: 10pt">
+    Введите название:
+  </span>
+  <mat-form-field class="example-full-width">
+    <mat-label>Название группы</mat-label>
+    <input matInput [(ngModel)]="data.group.name">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="onCancelClick()">Отмена</button>
+  <button mat-raised-button [mat-dialog-close]="data.group" color="primary">Сохранить</button>
+</div>

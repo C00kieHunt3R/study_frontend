@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Студент</h1>
+<div mat-dialog-content>
+  <p>Имя</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Имя студента</mat-label>
+    <input matInput [(ngModel)]="data.student.name">
+  </mat-form-field>
+  <p>Дата рождения</p>
+  <input [(ngModel)]="data.student.birthdate" type="date" pattern="'yyyy-MM-dd'" class="date-input">
+  <p>Номер</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Номер</mat-label>
+    <input matInput [(ngModel)]="data.student.number">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="onCancelClick()">Отмена</button>
+  <button mat-raised-button [mat-dialog-close]="data.student" color="primary">Сохранить</button>
+</div>
