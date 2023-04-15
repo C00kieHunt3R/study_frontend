@@ -7,6 +7,8 @@ import {GroupEditingModalComponent} from "./group-editing-modal/group-editing-mo
 import {StudentEditingModalComponent} from "./student-editing-modal/student-editing-modal.component";
 import {Observable} from "rxjs";
 import {MatTable} from "@angular/material/table";
+import {group} from "@angular/animations";
+import {UserContextService} from "../../service/user-context.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -14,114 +16,92 @@ import {MatTable} from "@angular/material/table";
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
-  groups: Group[] = [
-    {
-      id: 1,
-      name: "6402",
-      students: [
-        {
-          id: 1,
-          name: "Михаил",
-          birthdate: new Date("2001-01-17"),
-          number: 123214
-        },
-        {
-          id: 2,
-          name: "Кирилл",
-          birthdate: new Date("2001-01-17"),
-          number: 123214
-        },
-        {
-          id: 3,
-          name: "Максим",
-          birthdate: new Date("2001-01-17"),
-          number: 123214
-        },
-        {
-          id: 4,
-          name: "Аноним",
-          birthdate: new Date("2001-01-17"),
-          number: 123214
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "6403",
-      students: [
-        {
-          id: 5,
-          name: "Иван",
-          birthdate: new Date("2001-01-17"),
-          number: 123214
-        },
-        {
-          id: 6,
-          name: "Пупков",
-          birthdate: new Date("2001-01-17"),
-          number: 123214
-        }
-      ]
-    }
-  ]
-  displayedColumns: string[] = ['position', 'name', 'birthdate', 'number', 'controls']
-
+  groups?: Group[];
+  displayedColumns: string[] = ['position', 'name', 'birthdate', 'number', 'controls'];
+  isAuthenticated: boolean = false;
   constructor(
     private groupService: GroupService,
+    private studentService: StudentService,
+    private userContextService: UserContextService,
     private dialog: MatDialog
   ) {
-
-  }
-
-  onStudentDeleteBtnClick(student: Student, group: Group) {
-    this.groups.forEach(g => {
-      if (g.id == group.id) {
-        g.students.splice(g.students.indexOf(student), 1);
-        g.students = [...g.students];
-      }
+    this.groupService.getAll().subscribe(value => {
+      this.groups = value;
+    });
+    this.userContextService.getUserAccount.subscribe(user => {
+      if (user.role === "ROLE_ADMINISTRATOR") this.isAuthenticated = true;
     });
   }
 
-  onGroupEditBtnClick(group: Group | undefined) {
+  onStudentDeleteBtnClick(student: Student, group: Group): void {
+    this.studentService.delete(student.id).subscribe(response => {
+      if (response) {
+        this.groups?.forEach(g => {
+          if (g.id == group.id) {
+            g.students.splice(g.students.indexOf(student), 1);
+            g.students = [...g.students];
+          }
+        });
+      }
+    });
+
+  }
+
+  onGroupEditBtnClick(group: Group | undefined): void {
     if (group) {
-      this.showGroupEditingModal(Object.assign({}, group)).subscribe(value => {
-        if (value)
-          this.groups.forEach(g => {
-            if (g.id == group.id) {
-              g.name = value.name;
-            }
-          });
-      });
+      this.updateGroup(group);
     } else {
-      this.showGroupEditingModal({} as Group).subscribe(value => {
-        if (value) {
-          value.students = [];
-          this.groups.push(value);
-        }
-      })
+      this.createGroup();
     }
   }
 
   onStudentEditBtnClick(student: Student | undefined, group: Group): void {
     if (student) {
-      this.showStudentEditingModal(Object.assign({}, student)).subscribe(value => {
-        this.groups.forEach(g => {
-          if (g.id == group.id) {
-            g.students[g.students.indexOf(student)] = value;
-            g.students = [...g.students];
-          }
-        });
-      });
+      this.updateStudent(student, group);
     } else {
-      this.showStudentEditingModal({} as Student).subscribe(value => {
-        this.groups.forEach(g => {
-          if (g.id == group.id) {
-            g.students.push(value);
-            g.students = [...g.students];
-          }
-        });
-      });
+      this.createStudent(group);
     }
+  }
+
+  createGroup(): void {
+    this.showGroupEditingModal({} as Group).subscribe(value => {
+      if (value) {
+        value.students = [];
+        this.groupService.create(value).subscribe(response => {
+          this.groups!.push(response);
+        });
+      }
+    });
+  }
+
+  updateGroup(group: Group): void {
+    this.showGroupEditingModal(Object.assign({}, group)).subscribe(value => {
+      if (value)
+        this.groupService.update(value.id, value).subscribe(response => {
+          let index = this.groups!.indexOf(group);
+          this.groups![index] = response;
+        });
+    });
+  }
+
+  createStudent(group: Group): void {
+    this.showStudentEditingModal({} as Student).subscribe(value => {
+      this.studentService.create(value, group.id).subscribe(response => {
+        let index = this.groups!.indexOf(group);
+        this.groups![index].students.push(response);
+        this.groups![index].students = [...this.groups![index].students];
+      });
+    });
+  }
+
+  updateStudent(student: Student, group: Group): void {
+    this.showStudentEditingModal(Object.assign({}, student)).subscribe(value => {
+      this.studentService.update(value.id, value).subscribe(response => {
+        let index = this.groups!.indexOf(group);
+        this.groups![index].students[this.groups![index].students.indexOf(student)] = response;
+        this.groups![index].students = [...this.groups![index].students];
+      });
+    });
   }
 
   showStudentEditingModal(student: Student): Observable<any> {
@@ -136,5 +116,14 @@ export class DashboardComponent {
       data: {group: group},
     });
     return dialogRef.afterClosed();
+  }
+
+  onGroupDeleteBtnClick(group: Group): void {
+    this.groupService.delete(group.id).subscribe(response => {
+      if (response) {
+        let index = this.groups!.indexOf(group);
+        this.groups!.splice(index, 1);
+      }
+    });
   }
 }

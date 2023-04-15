@@ -1,13 +1,17 @@
 <div class="container">
-  <form [formGroup]="loginData" class="form-container" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="fill" class="user-input">
-      <mat-label>Логин</mat-label>
-      <input matInput formControlName="login">
-    </mat-form-field>
-    <mat-form-field appearance="fill" class="user-input">
-      <mat-label>Пароль</mat-label>
-      <input matInput type="password" formControlName="password">
-    </mat-form-field>
-    <button mat-raised-button type="submit">Войти</button>
-  </form>
+  <div>
+    <p style="text-align: center; font-size: 20pt">Вход</p>
+    <form [formGroup]="loginData" class="form-container" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill" class="user-input">
+        <mat-label>Логин</mat-label>
+        <input matInput formControlName="login">
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="user-input">
+        <mat-label>Пароль</mat-label>
+        <input matInput type="password" formControlName="password">
+      </mat-form-field>
+      <button mat-raised-button type="submit">Войти</button>
+      <button mat-flat-button color="warn" style="margin-top: 10pt">Зарегистрироваться</button>
+    </form>
+  </div>
 </div>

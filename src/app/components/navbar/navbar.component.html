@@ -1,9 +1,13 @@
 <mat-toolbar color="primary">
-  <span class="project-name">Study Project</span>
-  <button mat-button class="nav-button" routerLink="/dashboard">Управление</button>
+  <span class="header-text">Study Project</span>
+  <button mat-button class="nav-button" routerLink="/dashboard">Информация</button>
   <span class="spacer"></span>
-  <span class="project-name">{{role}}</span>
-  <button mat-raised-button routerLink="/login">
+  <span *ngIf="role">
+    <span class="header-text">{{username}} <mat-icon class="profile-icon">account_circle</mat-icon></span>
+    <span style="border: 1px solid white; border-width: 0 1px 0 0; margin-right: 10pt"></span>
+    <span class="header-text">{{role}}</span>
+  </span>
+  <button mat-raised-button (click)="onLoginBtnClick()">
     <div *ngIf="role; else login">Выйти</div>
     <ng-template #login>Войти</ng-template>
   </button>

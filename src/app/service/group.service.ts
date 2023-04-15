@@ -7,17 +7,29 @@ import GroupsJSON from "../../assets/groups.json";
 
 @Injectable({providedIn: "root"})
 export class GroupService {
-  private apiUrl: string = environment.apiBaseUrl + "/api/students";
+  private apiUrl: string = environment.apiBaseUrl + "/api/groups";
+
   constructor(
     private http: HttpClient
   ) {
   }
 
-  public getAll<T = Group[]>(groupId: number): Observable<T>{
-    if (environment.noBackend) {
-      return of(JSON.parse(JSON.stringify(GroupsJSON)));
-    } else {
-      return this.http.get<T>(this.apiUrl + "/get-all?group_id=" + groupId);
-    }
+  public getById<T = Group>(id: number): Observable<T> {
+    return this.http.get<T>(this.apiUrl + "/get?id=" + id);
+  }
+
+  public getAll<T = Group[]>(): Observable<T> {
+    return this.http.get<T>(this.apiUrl + "/get-all");
+  }
+  public create<T = Group>(group: Group): Observable<T> {
+    return this.http.post<T>(this.apiUrl + "/create", group);
+  }
+
+  public update<T = Group>(id: number, group: Group): Observable<T> {
+    return this.http.put<T>(this.apiUrl + "/update?id=" + id, group);
+  }
+
+  public delete<T = boolean>(id: number): Observable<T> {
+    return this.http.delete<T>(this.apiUrl + "/delete?id=" + id);
   }
 }
